@@ -1,11 +1,9 @@
-import React, {useState} from 'react';
+import React from 'react';
 
-function SelectTodo({ getTodos }) {
-    const [isCompleted, setIsCompleted] = useState("");
+function SelectTodo({ ChangeOptionTodos }) {
 
     const handleChangeOption = (e) => {
-        setIsCompleted(e.target.value);
-        getTodos(isCompleted);
+        ChangeOptionTodos(e.target.value);
     }
     return (
         <div>

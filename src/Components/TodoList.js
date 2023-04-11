@@ -1,80 +1,91 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Todos from "./Todo";
 import SelectTodo from "./SelectTodo";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheckSquare, faTrashCan } from "@fortawesome/free-regular-svg-icons";
 
 function TodoList() {
-  const [todos, setTodos] = useState([
-    {
-      title: "Monday",
-      isCompleted: false,
-    },
-    {
-      title: "Tuesday",
-      isCompleted: false,
-    },
-    {
-      title: "Wednesday",
-      isCompleted: false,
-    },
-  ]);
+  const [todos, setTodos] = useState([]);
+
+  useEffect(() => {
+      const storedList = JSON.parse(localStorage.getItem("todos"));
+      if (storedList)
+      setTodos(storedList);
+  },[]);
 
   const addTodos = (title) => {
-    setTodos([...todos, { title }]);
-  };
+    let newTodos = [...todos];
+    newTodos.push({status: "UnCompleted", title, display: true });
+    setTodos(newTodos);
+    localStorage.setItem('todos', JSON.stringify(newTodos));
+    console.log(newTodos);
+  }
 
   const CheckTodos = (index) => {
-    const newTodos = [...todos];
-    newTodos[index].isCompleted = !newTodos[index].isCompleted;
+    let newTodos = [...todos];
+    newTodos[index].status = newTodos[index].status === 'Completed' ? 'UnCompleted' : 'Completed';
     setTodos(newTodos);
+    localStorage.setItem('todos', JSON.stringify(newTodos));
+    
   };
 
   const removeTodos = (index) => {
     const newTodos = [...todos];
     newTodos.splice(index, 1);
+    setTodos(newTodos)
+    localStorage.setItem('todos', JSON.stringify(newTodos));
+  };
+
+  const ChangeOptionTodos = (isCompleted) => {
+    let newTodos = [];
+
+    if (isCompleted === 'All') {
+      let items = [...todos].map(t => ({...t, display: true}));
+      setTodos(items);
+      return false;
+    }
+
+    for(let i=0;i<todos.length;i++) {
+      let item = {...todos[i]}
+      if(todos[i].status === isCompleted) {
+        item.display = true
+      } else {
+        item.display = false
+      }
+      newTodos.push(item)
+    }
     setTodos(newTodos);
   };
 
-  const getTodos = (isCompleted) => {
-    const newTodos = [...todos];
+  // const UpdateTodos = (index) => {
 
-    // if (isCompleted === "All") {
-    //     setTodos(newTodos);
-    // } else if (isCompleted === "Completed") {
-    //     const fiTodos = newTodos.filter((li) => li.status !== "Completed");
-    //     setTodos(fiTodos);
-    // } else {
-    //     const fiTodos = newTodos.filter((li) => li.status !== "UnCompleted");
-    //     setTodos(fiTodos);
-    console.log(newTodos);
-    console.log(isCompleted);
-  };
+  // }
 
   return (
     <div className="todo-list">
       <div className="todos-top">
         <Todos addTodos={addTodos} />
-        <SelectTodo getTodos={getTodos} />
+        <SelectTodo ChangeOptionTodos={ChangeOptionTodos} />
       </div>
-      {todos.map((todo, index) => (
-        <div className="todo">
-          <span
-            className={
-              todo.isCompleted ? "todo-text todo-completed" : "todo-text"
-            }
-          >
-            {todo.title}
-          </span>
-          <div className="btn">
-            <button onClick={() => CheckTodos(index)}>
-              <FontAwesomeIcon icon={faCheckSquare} />
-            </button>
-            <button onClick={() => removeTodos(index)}>
-              <FontAwesomeIcon icon={faTrashCan} />
-            </button>
-          </div>
+
+      {todos.map((item, index) => (
+        item.display && <div className="todo" key={index}>
+        <span
+          className={
+            item.status === "Completed" ? "todo-text todo-completed" : "todo-text"
+          }
+        >
+          {item.title}
+        </span>
+        <div className="btn">
+          <button onClick={() => CheckTodos(index)}>
+            <FontAwesomeIcon icon={faCheckSquare} />
+          </button>
+          <button onClick={() => removeTodos(index)}>
+            <FontAwesomeIcon icon={faTrashCan} />
+          </button>
         </div>
+      </div>
       ))}
     </div>
   );
