@@ -4,6 +4,7 @@ import SelectTodo from "./SelectTodo";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCheckSquare, faTrashCan } from "@fortawesome/free-regular-svg-icons";
 
+
 function TodoList() {
   const [todos, setTodos] = useState([]);
 
