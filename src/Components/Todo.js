@@ -14,9 +14,6 @@ function Todo({ addTodos }) {
     setValue("");
   };
 
-
-
-
   return (
     <form onSubmit={handleSubmit}>
       <input
